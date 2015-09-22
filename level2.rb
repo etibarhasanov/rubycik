@@ -3,53 +3,58 @@ def calc expression
 	#puts expression
   # evaluate `expression` and return result
   #puts m = expression.scan(/([(][^()]+[)])/) #([(]d+[+-/*]d+)
-  val=twoValCalc(/[(]([^()]+)[)]/.match(expression))
-  expression.gsub!(/([(][^()]+[)])/,val.to_s)
-
   
+
+
+exp2=/([-]{2}\d+[.]?\d*)/
+  	if(expression=~exp2) 
+  	 val=minusMult(exp2.match(expression))
+  	  expression.gsub!(exp2,val.to_s)
+  	end
+
+  exp2=/[(]([^()]+)[)]/
+while (expression=~exp2)!=nil  do
+  val=twoValCalc(exp2.match(expression))
+  expression.sub!(exp2,val.to_s)
+end
+#*/
+  exp2=/(\d+[.]?\d*\s*[\/*]\s*[-]?\d+[.]?\d*)/
+   while (expression=~exp2)!=nil  do
+   val=twoValCalc(exp2.match(expression))
+   expression.sub!(exp2,val.to_s)
+  end
+
+  #+-
+ #\d+[.]?\d*\s*[+-]\s*[-]?\d+[.]?\d*
+	exp2=/(\d+[.]?\d*\s*[+-]\s*[-]?\d+[.]?\d*)/
+   while (expression=~exp2)!=nil  do
+   val=twoValCalc(exp2.match(expression))
+    expression.sub!(exp2,val.to_s)
+  end
+return expression.to_f
+
+ end
+
+ def minusMult expression
+ 	 factors=expression[1].split('-',2)
+   	return factors[1].to_f.send('*',-1)
  end
 
 def twoValCalc expression
-	puts expression[1]
+	#puts "1 "<<expression[1]
+
 	["/", '*', '-', '+'].each do |op|
+		#puts "op"<<op.to_s
+		#puts expression[1]
  		if expression[1].include? op
-      	factors= expression[1].split(op)
-   		return factors[0].to_f.send(op,factors[1].to_f)
+      		factors= expression[1].split(op,2)
+   			valreturn=factors[0].to_f.send(op,factors[1].to_f)
+   			return valreturn
     	end
 	end
 	return 0
 end
 
-
- puts calc('2 / (2 + 3) * 4.33 - -6')
-
-
-<<-DOC
- ["/", '*', '-', '+'].each do |op|
- 	puts op
- 	if expression.exist
-      factors= expression.split(op)
-      return summing(factors,'-')
-    end
-    if op.to_s=='+'
-      factors= expression.split(op)
-      return summing(factors,'+')
-    end
-    if op.to_s=='/'
-      factors= expression.split(op)
-      return summing(factors,'/')
-    end
-    if op.to_s=='*'
-      factors= expression.split(op)
-      return summing(factors,'*')
-    end
+puts calc('1476.0/--5.0')
 
 
-
-def summing(factors,op) 
-    return factors[0].to_f.send(op,factors[1].to_f)
-end
-=end
-
-
-DOC
